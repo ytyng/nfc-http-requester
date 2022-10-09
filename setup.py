@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='nfc-http-requester',
-    version='0.0.0',
+    version='0.0.1',
     description='Send HTTP request when NFC tag is touched.',
     license='BSD',
     author='ytyng',

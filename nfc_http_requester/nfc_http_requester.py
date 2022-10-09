@@ -18,6 +18,7 @@ class NfcHttpRequesterState:
     latest_identifier: bytes = b''
     latest_processed_datetime: datetime.datetime = datetime.datetime.now()
     url: str = ''
+    user_agent: str = 'nfc-http-requester'
     response_handler: Optional[Callable] = None
 
     def update_latest_processed_datetime(self):
@@ -40,6 +41,10 @@ def _parse_arguments():
         '--frontend-path', type=str, dest='frontend_path',
         required=False, default='usb',
         help='ContactlessFrontend path. default is "usb"'
+    )
+    parser.add_argument(
+        '--user-agent', type=str, dest='user_agent',
+        required=False, default='nfc-http-requester',
     )
     return parser.parse_args()
 
@@ -64,14 +69,18 @@ def _request(tag, ndef_data: list):
     transaction_id = uuid.uuid4().hex
     nfc_id = tag.identifier.hex()
     _logger.info(f'transaction:{transaction_id}, nfc_id:{nfc_id}')
-    # debug data
-    _logger.debug(('request tag_data:\n' + '\n'.join(
-        [f'  {r}' for r in tag.dump()])))
-    _logger.debug(('request ndef_data:\n' + '\n'.join(
-        [f'  {r}' for r in ndef_data])))
+
+    _logger.debug(f'request url: {_state.url}, user-agent:{_state.user_agent}')
+    _logger.debug('request tag_data:\n' + '\n'.join(
+        [f'  {r}' for r in tag.dump()]))
+    _logger.debug('request ndef_data:\n' + '\n'.join(
+        [f'  {r}' for r in ndef_data]))
 
     response = requests.post(
         _state.url,
+        headers={
+            'User-Agent': _state.user_agent,
+        },
         json={
             'identifier': nfc_id,
             'transaction_id': transaction_id,
@@ -133,6 +142,7 @@ def main():
     global _state
     _state = NfcHttpRequesterState(
         url=args.url,
+        user_agent=args.user_agent,
         response_handler=_response_handler,
     )
 
