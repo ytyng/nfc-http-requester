@@ -40,5 +40,3 @@ nfcpy を使っているので、nfcpy の対応デバイスが使えます。
 https://nfcpy.readthedocs.io/en/latest/overview.html#supported-devices
 
 Sony の RC-S380 などが使用できます。 開発は RC-S380 で行っています。
-
-
